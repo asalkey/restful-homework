@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customers</title>
+  <style type="text/css" media="screen">
+  html, body {
+    background-color: #4B7399;
+    font-family: Verdana, Helvetica, Arial;
+    font-size: 14px;
+  }
+  a { color: #0000FF; }
+  #container {
+    width: 75%;
+    margin: 0 auto;
+    background-color: #FFF;
+    padding: 20px 40px;
+    border: solid 1px black;
+    margin-top: 20px;
+  }
+  </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script type="text/javascript" charset="utf-8">
+  $( window ).load(function() {
+       var data = {'customer[firstname]': 'bob', 'customer[lastname]': 'ryan','customer[street]': 'main','customer[zip]':'92829','customer[country]':'usa'}
+
+      $.post('/customers', data, function(data, response, xhr) {
+        $('#post ul').append('<li> created a post </li>');
+        $('#post ul').append('<li>' + response + '</li>');
+        $('#post ul').append('<li>' + xhr.status + '</li>');
+        $('#post ul').append('<li>' + xhr.getResponseHeader('Location') + '</li>');
+      });
+
+
+    $.get('/customers', function(data,response,xhr) {
+      $("#get").append(xhr.getResponseHeader('content-type') + '<br/>');
+      $("#get pre").append(JSON.stringify(data, undefined, 2) + '<br/>');
+      $("#get").append(xhr.status + '<br/>');
+    });
+
+    var update = {'customer[firstname]': 'Amanda', 'customer[lastname]': 'Ryan','customer[street]': 'Main','customer[zip]':'22829','customer[country]':'Canada'}
+    $.ajax({
+            url: '/customers/68',
+            type: 'PUT',
+            data: update,
+            success: function(data, response, xhr) {
+              console.log(data);
+              console.log(response);
+              console.log(xhr.status);
+            }
+    });
+
+    $.get('/customers/68', function(data,response,xhr) {
+      $("#update").append(xhr.getResponseHeader('content-type') + '<br/>');
+      $("#update pre").append(JSON.stringify(data, undefined, 2) + '<br/>');
+      $("#update").append(xhr.status + '<br/>');
+    });
+
+    $.ajax({
+      url: '/customers/88',
+      type: 'DELETE',
+      success: function(data,response,xhr) {
+        $("#delete").append('Deleted customer:88 <br/>');
+        $("#delete").append(response + '<br/>');
+        $("#delete").append(xhr.status + '<br/>');
+      }
+    });
+
+    $.get('/customers/89/2', function(data,response,xhr) {
+      $("#set-amount").append(xhr.getResponseHeader('content-type') + '<br/>');
+      $("#set-amount pre").append(JSON.stringify(data, undefined, 2) + '<br/>');
+      $("#set-amount").append(xhr.status + '<br/>');
+    });
+
+  });
+  </script>
+</head>
+<body>
+  <div id="container">
+    <div id='post'>
+      <h1> POST </h1>
+      <ul></ul>
+    </div>
+    <div id='get'>
+      <h1>GET</h1>
+      <pre><pre>
+    </div>
+    <div id='update'>
+      <h1>UPDATE</h1>
+      <pre></pre>
+    </div>
+    <div id='set-amount'>
+      <h1>GET FROM PARAMS</h1>
+      <pre></pre>
+    </div>
+  </div>
+</body>
+</html>

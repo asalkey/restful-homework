@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customers</title>
+  <style type="text/css" media="screen">
+  html, body {
+    background-color: #4B7399;
+    font-family: Verdana, Helvetica, Arial;
+    font-size: 14px;
+  }
+  a { color: #0000FF; }
+  #container {
+    width: 75%;
+    margin: 0 auto;
+    background-color: #FFF;
+    padding: 20px 40px;
+    border: solid 1px black;
+    margin-top: 20px;
+  }
+  </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script type="text/javascript" charset="utf-8">
+  $( window ).load(function() {
+
+    $.getJSON('/customers', function(customers) {
+      $.each(customers, function(data,e) {
+           $.ajax({
+            url: '/customers/' + e.id,
+            type: 'DELETE',
+            success: function(data,response,xhr) {
+              $("#delete").append('Deleted customer:' + e.id + '<br/>');
+              $("#delete").append(response + '<br/>');
+              $("#delete").append(xhr.status + '<br/>');
+            }
+        });
+      });
+    });
+
+
+    // $.get('/customers/', function(data,response,xhr) {
+    //   $("#get").append(xhr.getResponseHeader('content-type') + '<br/>');
+    //   $("#get pre").append(JSON.stringify(data, undefined, 2) + '<br/>');
+    //   $("#get").append(xhr.status + '<br/>');
+    // });
+
+
+  });
+  </script>
+</head>
+<body>
+  <div id="container">
+    <div id='delete'>
+      <h1> Deleting </h1>
+    </div>
+  </div>
+</body>
+</html>

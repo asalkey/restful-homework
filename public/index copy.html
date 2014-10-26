@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customers</title>
+  <style type="text/css" media="screen">
+  html, body {
+    background-color: #4B7399;
+    font-family: Verdana, Helvetica, Arial;
+    font-size: 14px;
+  }
+  a { color: #0000FF; }
+  #container {
+    width: 75%;
+    margin: 0 auto;
+    background-color: #FFF;
+    padding: 20px 40px;
+    border: solid 1px black;
+    margin-top: 20px;
+  }
+  </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script type="text/javascript" charset="utf-8">
+  $( window ).load(function() {
+    function addCustomer(customer) {
+      $('#customers').append('<span>' + customer.firstname + customer.lastname + customer.street + customer.zip +  customer.country + '<a href="/#delete-' + customer.id + '">Delete</a> <a href="/#update-' + customer.id + '">Update</a></span> <br/>');
+    }
+
+
+      $('#new_customer').submit(function(e) {
+        console.log(e);
+        $.post('/customers', $(this).serialize(), addCustomer);
+        this.reset();
+        e.preventDefault();
+      });
+
+
+    $.getJSON('/customers', function(customers) {
+      $.each(customers, function() { addCustomer(this); });
+    });
+
+    $(window).on('hashchange',function(){
+      var d = location.hash;
+      var res = d.substring(1,d.lastIndexOf("-"));
+      var id = d.split('-')[1];
+      console.log(id);
+      if(res == 'delete'){
+        $.ajax({
+            url: '/customers/' + id,
+            type: 'DELETE',
+            success: function(result) {
+              window.location = "/"
+            }
+        });
+      } else if(res == 'update' && res.length !== 0 ){
+        $('#new_customer input[type="submit"]').val('update');
+        $('#update_customer').show();
+        $('#new_customer').hide();
+
+        $('#update_customer').submit(function(e) {
+          $.ajax({
+              url: '/customers/' + id,
+              data:$(this).serialize(),
+              type: 'PUT',
+              success: function(result) {
+                window.location = "/"
+              }
+          });
+        });
+      }
+    });
+
+  });
+  </script>
+</head>
+<body>
+  <div id="container">
+    <h1>Customers</h1>
+    <form id="new_customer">
+      <input type="text" name="customer[firstname]" placeholder='firstname'>
+      <input type="text" name="customer[lastname]" placeholder='lastname'>
+      <input type="text" name="customer[street]" placeholder='street'>
+      <input type="text" name="customer[zip]" placeholder='zip'>
+      <input type="text" name="customer[country]" placeholder='country'>
+      <input type="submit" value="Add">
+    </form>
+
+   <form id="update_customer" style="display:none;">
+      <input type="text" name="customer[firstname]" placeholder='firstname'>
+      <input type="text" name="customer[lastname]" placeholder='lastname'>
+      <input type="text" name="customer[street]" placeholder='street'>
+      <input type="text" name="customer[zip]" placeholder='zip'>
+      <input type="text" name="customer[country]" placeholder='country'>
+      <input type="submit" value="Update">
+    </form>
+    <div id="customers">
+    </div>
+  </div>
+</body>
+</html>
